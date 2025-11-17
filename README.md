@@ -9,13 +9,13 @@ and maps universal verbs like `dev`, `build`, `test`, `reset`, or `logs` to the
 right stack-specific commands. Instead of memorising 20 rituals, you just run:
 
 ```bash
-axl dev
-axl build
-axl test
-axl clean
-axl reset
-axl open
-axl logs
+axl dev      # start the dev server / run target
+axl build    # produce release artifacts
+axl test     # execute the stack's tests
+axl clean    # remove build artifacts
+axl reset    # wipe caches + reinstall deps
+axl open     # open the project in the OS UI
+axl logs     # tail relevant logs
 ```
 
 AXL is ideal for engineers juggling dozens of repositories and switching
@@ -27,7 +27,7 @@ instead of adding yet another bespoke CLI to learn.
 ## Features
 
 - **Stack auto-detection** — looks for marker files such as `package.json`,
-  `gradlew`, `Cargo.toml`, `pubspec.yaml`, `BUILD.bazel`, `.robin.json`,
+  `gradlew`, `Cargo.toml`, `pubspec.yaml`, `BUILD.bazel`,
   `pyproject.toml`, or falls back to `.git`.
 - **Zero-config defaults** — each stack ships with sensible commands for all
   verbs (e.g. Bun → `bun run dev`, Rust → `cargo run`). Works out-of-the-box.
@@ -139,7 +139,6 @@ If `[project]` supplies `stack`, it overrides detection.
 | `pubspec.yaml`   | Flutter                             |
 | `melos.yaml`     | Dart monorepo (Melos)               |
 | `BUILD.bazel`    | Bazel                               |
-| `.robin.json`    | Wayve / Robin tooling               |
 | `pyproject.toml` | Python                              |
 | `.git`           | Generic fallback                    |
 
