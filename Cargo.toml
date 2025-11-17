@@ -2,6 +2,11 @@
 name = "axl"
 version = "0.1.0"
 edition = "2024"
+authors = ["Cesar Ferreira <cesar.manuel.ferreira@gmail.com>"]
+license = "MIT"
+description = "Stack-aware developer workflow CLI"
+repository = "https://github.com/cesarferreira/axl"
+readme = "README.md"
 
 [dependencies]
 anyhow = "1.0.95"
