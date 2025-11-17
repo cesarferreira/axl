@@ -64,7 +64,8 @@ fn main() -> Result<()> {
         | Commands::Clean
         | Commands::Reset
         | Commands::Open
-        | Commands::Logs => unreachable!("verb commands handled earlier"),
+        | Commands::Logs
+        | Commands::Install => unreachable!("verb commands handled earlier"),
     }
 
     Ok(())

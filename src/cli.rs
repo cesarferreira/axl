@@ -30,6 +30,8 @@ pub enum Commands {
     Open,
     /// Tail/watch logs as defined by the stack
     Logs,
+    /// Install the project locally (e.g., cargo install --path .)
+    Install,
     /// Show the resolved stack, detection reason, and command table
     Info,
     /// Print only the detection details for debugging
@@ -72,6 +74,7 @@ impl Commands {
             Reset => Some(Verb::Reset),
             Open => Some(Verb::Open),
             Logs => Some(Verb::Logs),
+            Install => Some(Verb::Install),
             _ => None,
         }
     }

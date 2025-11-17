@@ -11,10 +11,11 @@ pub enum Verb {
     Reset,
     Open,
     Logs,
+    Install,
 }
 
 impl Verb {
-    pub const ALL: [Verb; 7] = [
+    pub const ALL: [Verb; 8] = [
         Verb::Dev,
         Verb::Build,
         Verb::Test,
@@ -22,6 +23,7 @@ impl Verb {
         Verb::Reset,
         Verb::Open,
         Verb::Logs,
+        Verb::Install,
     ];
 
     pub fn as_str(self) -> &'static str {
@@ -33,6 +35,7 @@ impl Verb {
             Verb::Reset => "reset",
             Verb::Open => "open",
             Verb::Logs => "logs",
+            Verb::Install => "install",
         }
     }
 }
@@ -55,6 +58,7 @@ impl FromStr for Verb {
             "reset" => Ok(Verb::Reset),
             "open" => Ok(Verb::Open),
             "logs" => Ok(Verb::Logs),
+            "install" => Ok(Verb::Install),
             other => Err(format!("unknown verb '{other}'")),
         }
     }

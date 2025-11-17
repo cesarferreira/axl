@@ -16,6 +16,7 @@ axl clean    # remove build artifacts
 axl reset    # wipe caches + reinstall deps
 axl open     # open the project in the OS UI
 axl logs     # tail relevant logs
+axl install  # install the project locally
 ```
 
 AXL is ideal for engineers juggling dozens of repositories and switching
@@ -67,17 +68,19 @@ axl clean    # remove build artifacts
 axl reset    # wipe caches + reinstall deps
 axl open     # open the project in the OS UI
 axl logs     # tail relevant logs
+axl install  # install the project locally
 ```
 
-| Verb        | Description                                                     |
-| ----------- | --------------------------------------------------------------- |
-| `axl dev`   | Launch the stack’s “dev” target (server, emulator, binary, etc.)|
-| `axl build` | Produce release/production artifacts for the current project.   |
-| `axl test`  | Run the default test suite for the detected stack.              |
-| `axl clean` | Remove build outputs / caches to get a fresh tree.              |
-| `axl reset` | Perform a deeper nuke (node_modules, Gradle caches, bootstrap). |
-| `axl open`  | Open the repo in the OS UI (IDE, Finder, Explorer, etc.).       |
-| `axl logs`  | Tail the relevant logs (adb logcat, flutter logs, vite output). |
+| Verb         | Description                                                     |
+| ------------ | --------------------------------------------------------------- |
+| `axl dev`    | Launch the stack's "dev" target (server, emulator, binary, etc.)|
+| `axl build`  | Produce release/production artifacts for the current project.   |
+| `axl test`   | Run the default test suite for the detected stack.              |
+| `axl clean`  | Remove build outputs / caches to get a fresh tree.              |
+| `axl reset`  | Perform a deeper nuke (node_modules, Gradle caches, bootstrap). |
+| `axl open`   | Open the repo in the OS UI (IDE, Finder, Explorer, etc.).       |
+| `axl logs`   | Tail the relevant logs (adb logcat, flutter logs, vite output). |
+| `axl install`| Install the project locally (cargo install --path ., etc.).     |
 
 ### Project helpers
 

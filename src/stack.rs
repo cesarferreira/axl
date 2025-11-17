@@ -78,6 +78,7 @@ impl Stack {
             (Stack::Bun, Reset) => Some("rm -rf node_modules bun.lockb && bun install"),
             (Stack::Bun, Open) => Some(default_open_command()),
             (Stack::Bun, Logs) => Some("bun run dev -- --verbose"),
+            (Stack::Bun, Install) => Some("bun install"),
 
             (Stack::Node, Dev) => Some("npm run dev"),
             (Stack::Node, Build) => Some("npm run build"),
@@ -86,6 +87,7 @@ impl Stack {
             (Stack::Node, Reset) => Some("rm -rf node_modules package-lock.json && npm install"),
             (Stack::Node, Open) => Some(default_open_command()),
             (Stack::Node, Logs) => Some("npm run logs"),
+            (Stack::Node, Install) => Some("npm install"),
 
             (Stack::Gradle, Dev) => Some("./gradlew :app:installDebug"),
             (Stack::Gradle, Build) => Some("./gradlew assemble"),
@@ -94,6 +96,7 @@ impl Stack {
             (Stack::Gradle, Reset) => Some("./gradlew clean --refresh-dependencies && ./gradlew --stop"),
             (Stack::Gradle, Open) => Some(default_open_command()),
             (Stack::Gradle, Logs) => Some("adb logcat"),
+            (Stack::Gradle, Install) => Some("./gradlew publishToMavenLocal"),
 
             (Stack::Rust, Dev) => Some("cargo run"),
             (Stack::Rust, Build) => Some("cargo build"),
@@ -102,6 +105,7 @@ impl Stack {
             (Stack::Rust, Reset) => Some("cargo clean && cargo fetch"),
             (Stack::Rust, Open) => Some(default_open_command()),
             (Stack::Rust, Logs) => Some("cargo test -- --nocapture"),
+            (Stack::Rust, Install) => Some("cargo install --path ."),
 
             (Stack::Flutter, Dev) => Some("flutter run"),
             (Stack::Flutter, Build) => Some("flutter build"),
@@ -110,6 +114,7 @@ impl Stack {
             (Stack::Flutter, Reset) => Some("flutter clean && flutter pub get"),
             (Stack::Flutter, Open) => Some(default_open_command()),
             (Stack::Flutter, Logs) => Some("flutter logs"),
+            (Stack::Flutter, Install) => Some("flutter pub get"),
 
             (Stack::Melos, Dev) => Some("melos run dev"),
             (Stack::Melos, Build) => Some("melos run build"),
@@ -118,6 +123,7 @@ impl Stack {
             (Stack::Melos, Reset) => Some("melos clean && melos bootstrap"),
             (Stack::Melos, Open) => Some(default_open_command()),
             (Stack::Melos, Logs) => Some("melos run logs"),
+            (Stack::Melos, Install) => Some("melos bootstrap"),
 
             (Stack::Bazel, Dev) => Some("bazel run //..."),
             (Stack::Bazel, Build) => Some("bazel build //..."),
@@ -126,6 +132,7 @@ impl Stack {
             (Stack::Bazel, Reset) => Some("bazel clean --expunge"),
             (Stack::Bazel, Open) => Some(default_open_command()),
             (Stack::Bazel, Logs) => Some("bazel test //... --test_output=all"),
+            (Stack::Bazel, Install) => Some("bazel fetch //..."),
 
             (Stack::Python, Dev) => Some("python -m app"),
             (Stack::Python, Build) => Some("python -m build"),
@@ -136,6 +143,7 @@ impl Stack {
             ),
             (Stack::Python, Open) => Some(default_open_command()),
             (Stack::Python, Logs) => Some("tail -f logs/*.log"),
+            (Stack::Python, Install) => Some("pip install ."),
 
             (Stack::Go, Dev) => Some("go run ."),
             (Stack::Go, Build) => Some("go build"),
@@ -144,6 +152,7 @@ impl Stack {
             (Stack::Go, Reset) => Some("go clean -modcache && go mod download"),
             (Stack::Go, Open) => Some(default_open_command()),
             (Stack::Go, Logs) => Some("go test -v ./..."),
+            (Stack::Go, Install) => Some("go install"),
 
             (Stack::Ruby, Dev) => Some("bundle exec rails server"),
             (Stack::Ruby, Build) => Some("bundle exec rake assets:precompile"),
@@ -152,6 +161,7 @@ impl Stack {
             (Stack::Ruby, Reset) => Some("rm -rf vendor/bundle && bundle install"),
             (Stack::Ruby, Open) => Some(default_open_command()),
             (Stack::Ruby, Logs) => Some("tail -f log/development.log"),
+            (Stack::Ruby, Install) => Some("bundle install"),
 
             (Stack::Maven, Dev) => Some("mvn spring-boot:run"),
             (Stack::Maven, Build) => Some("mvn package"),
@@ -160,6 +170,7 @@ impl Stack {
             (Stack::Maven, Reset) => Some("mvn clean && rm -rf ~/.m2/repository && mvn dependency:resolve"),
             (Stack::Maven, Open) => Some(default_open_command()),
             (Stack::Maven, Logs) => Some("tail -f logs/*.log"),
+            (Stack::Maven, Install) => Some("mvn install"),
 
             (Stack::Php, Dev) => Some("php artisan serve"),
             (Stack::Php, Build) => Some("composer install --no-dev --optimize-autoloader"),
@@ -168,6 +179,7 @@ impl Stack {
             (Stack::Php, Reset) => Some("rm -rf vendor composer.lock && composer install"),
             (Stack::Php, Open) => Some(default_open_command()),
             (Stack::Php, Logs) => Some("tail -f storage/logs/laravel.log"),
+            (Stack::Php, Install) => Some("composer install"),
 
             (Stack::Elixir, Dev) => Some("mix phx.server"),
             (Stack::Elixir, Build) => Some("mix release"),
@@ -176,6 +188,7 @@ impl Stack {
             (Stack::Elixir, Reset) => Some("mix deps.clean --all && mix deps.get"),
             (Stack::Elixir, Open) => Some(default_open_command()),
             (Stack::Elixir, Logs) => Some("tail -f _build/dev/lib/*/priv/logs/*.log"),
+            (Stack::Elixir, Install) => Some("mix deps.get"),
 
             (Stack::DotNet, Dev) => Some("dotnet run"),
             (Stack::DotNet, Build) => Some("dotnet build"),
@@ -184,6 +197,7 @@ impl Stack {
             (Stack::DotNet, Reset) => Some("dotnet clean && dotnet restore"),
             (Stack::DotNet, Open) => Some(default_open_command()),
             (Stack::DotNet, Logs) => Some("dotnet run --no-build"),
+            (Stack::DotNet, Install) => Some("dotnet restore"),
 
             (Stack::Swift, Dev) => Some("swift run"),
             (Stack::Swift, Build) => Some("swift build"),
@@ -192,6 +206,7 @@ impl Stack {
             (Stack::Swift, Reset) => Some("swift package clean && swift package resolve"),
             (Stack::Swift, Open) => Some(default_open_command()),
             (Stack::Swift, Logs) => Some("swift test --verbose"),
+            (Stack::Swift, Install) => Some("swift package resolve"),
 
             (Stack::Generic, Open) => Some(default_open_command()),
             _ => None,
