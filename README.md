@@ -26,9 +26,9 @@ instead of adding yet another bespoke CLI to learn.
 
 ## Features
 
-- **Stack auto-detection** — looks for marker files such as `package.json`,
-  `gradlew`, `Cargo.toml`, `pubspec.yaml`, `BUILD.bazel`,
-  `pyproject.toml`, or falls back to `.git`.
+- **Stack auto-detection** — looks for marker files such as `bun.lock`,
+  `package.json`, `gradlew`, `Cargo.toml`, `pubspec.yaml`, `BUILD.bazel`,
+  `pyproject.toml`, or falls back to `.git`. Bun is prioritized over Node.js.
 - **Zero-config defaults** — each stack ships with sensible commands for all
   verbs (e.g. Bun → `bun run dev`, Rust → `cargo run`). Works out-of-the-box.
 - **Optional overrides** — drop an `axl.toml` in any repo to redefine verbs,
@@ -132,8 +132,9 @@ If `[project]` supplies `stack`, it overrides detection.
 
 | Marker           | Stack / defaults                    |
 | ---------------- | ----------------------------------- |
+| `bun.lock`       | Bun (v1.2+ text format)             |
+| `bun.lockb`      | Bun (pre-v1.2 binary format)        |
 | `package.json`   | Node / TypeScript                   |
-| `bun.lockb`      | Bun                                 |
 | `gradlew`        | Gradle / Android / Kotlin           |
 | `Cargo.toml`     | Rust                                |
 | `pubspec.yaml`   | Flutter                             |

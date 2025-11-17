@@ -191,12 +191,16 @@ struct Marker {
 
 const MARKERS: &[Marker] = &[
     Marker {
-        stack: Stack::Node,
-        path: "package.json",
+        stack: Stack::Bun,
+        path: "bun.lock",
     },
     Marker {
         stack: Stack::Bun,
         path: "bun.lockb",
+    },
+    Marker {
+        stack: Stack::Node,
+        path: "package.json",
     },
     Marker {
         stack: Stack::Gradle,
