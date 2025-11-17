@@ -14,6 +14,13 @@ pub enum Stack {
     Melos,
     Bazel,
     Python,
+    Go,
+    Ruby,
+    Maven,
+    Php,
+    Elixir,
+    DotNet,
+    Swift,
     Generic,
 }
 
@@ -28,6 +35,13 @@ impl Stack {
             Stack::Melos => "Melos",
             Stack::Bazel => "Bazel",
             Stack::Python => "Python",
+            Stack::Go => "Go",
+            Stack::Ruby => "Ruby",
+            Stack::Maven => "Maven / Java",
+            Stack::Php => "PHP",
+            Stack::Elixir => "Elixir",
+            Stack::DotNet => ".NET",
+            Stack::Swift => "Swift",
             Stack::Generic => "Generic",
         }
     }
@@ -42,6 +56,13 @@ impl Stack {
             Stack::Melos => "melos",
             Stack::Bazel => "bazel",
             Stack::Python => "python",
+            Stack::Go => "go",
+            Stack::Ruby => "ruby",
+            Stack::Maven => "maven",
+            Stack::Php => "php",
+            Stack::Elixir => "elixir",
+            Stack::DotNet => "dotnet",
+            Stack::Swift => "swift",
             Stack::Generic => "generic",
         }
     }
@@ -70,7 +91,7 @@ impl Stack {
             (Stack::Gradle, Build) => Some("./gradlew assemble"),
             (Stack::Gradle, Test) => Some("./gradlew test"),
             (Stack::Gradle, Clean) => Some("./gradlew clean"),
-            (Stack::Gradle, Reset) => Some("./gradlew clean && ./gradlew --stop"),
+            (Stack::Gradle, Reset) => Some("./gradlew clean --refresh-dependencies && ./gradlew --stop"),
             (Stack::Gradle, Open) => Some(default_open_command()),
             (Stack::Gradle, Logs) => Some("adb logcat"),
 
@@ -116,6 +137,62 @@ impl Stack {
             (Stack::Python, Open) => Some(default_open_command()),
             (Stack::Python, Logs) => Some("tail -f logs/*.log"),
 
+            (Stack::Go, Dev) => Some("go run ."),
+            (Stack::Go, Build) => Some("go build"),
+            (Stack::Go, Test) => Some("go test ./..."),
+            (Stack::Go, Clean) => Some("go clean"),
+            (Stack::Go, Reset) => Some("go clean -modcache && go mod download"),
+            (Stack::Go, Open) => Some(default_open_command()),
+            (Stack::Go, Logs) => Some("go test -v ./..."),
+
+            (Stack::Ruby, Dev) => Some("bundle exec rails server"),
+            (Stack::Ruby, Build) => Some("bundle exec rake assets:precompile"),
+            (Stack::Ruby, Test) => Some("bundle exec rspec"),
+            (Stack::Ruby, Clean) => Some("bundle exec rake assets:clobber"),
+            (Stack::Ruby, Reset) => Some("rm -rf vendor/bundle && bundle install"),
+            (Stack::Ruby, Open) => Some(default_open_command()),
+            (Stack::Ruby, Logs) => Some("tail -f log/development.log"),
+
+            (Stack::Maven, Dev) => Some("mvn spring-boot:run"),
+            (Stack::Maven, Build) => Some("mvn package"),
+            (Stack::Maven, Test) => Some("mvn test"),
+            (Stack::Maven, Clean) => Some("mvn clean"),
+            (Stack::Maven, Reset) => Some("mvn clean && rm -rf ~/.m2/repository && mvn dependency:resolve"),
+            (Stack::Maven, Open) => Some(default_open_command()),
+            (Stack::Maven, Logs) => Some("tail -f logs/*.log"),
+
+            (Stack::Php, Dev) => Some("php artisan serve"),
+            (Stack::Php, Build) => Some("composer install --no-dev --optimize-autoloader"),
+            (Stack::Php, Test) => Some("./vendor/bin/phpunit"),
+            (Stack::Php, Clean) => Some("rm -rf vendor bootstrap/cache/*.php"),
+            (Stack::Php, Reset) => Some("rm -rf vendor composer.lock && composer install"),
+            (Stack::Php, Open) => Some(default_open_command()),
+            (Stack::Php, Logs) => Some("tail -f storage/logs/laravel.log"),
+
+            (Stack::Elixir, Dev) => Some("mix phx.server"),
+            (Stack::Elixir, Build) => Some("mix release"),
+            (Stack::Elixir, Test) => Some("mix test"),
+            (Stack::Elixir, Clean) => Some("mix clean"),
+            (Stack::Elixir, Reset) => Some("mix deps.clean --all && mix deps.get"),
+            (Stack::Elixir, Open) => Some(default_open_command()),
+            (Stack::Elixir, Logs) => Some("tail -f _build/dev/lib/*/priv/logs/*.log"),
+
+            (Stack::DotNet, Dev) => Some("dotnet run"),
+            (Stack::DotNet, Build) => Some("dotnet build"),
+            (Stack::DotNet, Test) => Some("dotnet test"),
+            (Stack::DotNet, Clean) => Some("dotnet clean"),
+            (Stack::DotNet, Reset) => Some("dotnet clean && dotnet restore"),
+            (Stack::DotNet, Open) => Some(default_open_command()),
+            (Stack::DotNet, Logs) => Some("dotnet run --no-build"),
+
+            (Stack::Swift, Dev) => Some("swift run"),
+            (Stack::Swift, Build) => Some("swift build"),
+            (Stack::Swift, Test) => Some("swift test"),
+            (Stack::Swift, Clean) => Some("swift package clean"),
+            (Stack::Swift, Reset) => Some("swift package clean && swift package resolve"),
+            (Stack::Swift, Open) => Some(default_open_command()),
+            (Stack::Swift, Logs) => Some("swift test --verbose"),
+
             (Stack::Generic, Open) => Some(default_open_command()),
             _ => None,
         }?;
@@ -129,6 +206,13 @@ impl Stack {
             Stack::Melos => vec!["melos"],
             Stack::Bazel => vec!["bazel"],
             Stack::Python => vec!["python"],
+            Stack::Go => vec!["go"],
+            Stack::Ruby => vec!["ruby", "bundle"],
+            Stack::Maven => vec!["mvn", "java"],
+            Stack::Php => vec!["php", "composer"],
+            Stack::Elixir => vec!["elixir", "mix"],
+            Stack::DotNet => vec!["dotnet"],
+            Stack::Swift => vec!["swift"],
             Stack::Generic => vec![],
         }
         .into_iter()
@@ -157,11 +241,13 @@ pub struct DefaultCommand {
     pub requires: Vec<String>,
 }
 
+#[derive(Clone)]
 pub struct Detection {
     pub stack: Stack,
     pub reason: DetectionReason,
 }
 
+#[derive(Clone)]
 pub enum DetectionReason {
     Config(String),
     Marker { path: String },
@@ -227,6 +313,30 @@ const MARKERS: &[Marker] = &[
         path: "pyproject.toml",
     },
     Marker {
+        stack: Stack::Go,
+        path: "go.mod",
+    },
+    Marker {
+        stack: Stack::Ruby,
+        path: "Gemfile",
+    },
+    Marker {
+        stack: Stack::Maven,
+        path: "pom.xml",
+    },
+    Marker {
+        stack: Stack::Php,
+        path: "composer.json",
+    },
+    Marker {
+        stack: Stack::Elixir,
+        path: "mix.exs",
+    },
+    Marker {
+        stack: Stack::Swift,
+        path: "Package.swift",
+    },
+    Marker {
         stack: Stack::Generic,
         path: ".git",
     },
@@ -256,6 +366,30 @@ pub fn detect_stack(
                     path: marker.path.into(),
                 },
             };
+        }
+    }
+
+    // Check for .NET projects (*.csproj or *.sln files)
+    if let Ok(entries) = std::fs::read_dir(dir) {
+        for entry in entries.flatten() {
+            if let Some(name) = entry.file_name().to_str() {
+                if name.ends_with(".csproj") {
+                    return Detection {
+                        stack: Stack::DotNet,
+                        reason: DetectionReason::Marker {
+                            path: name.to_string(),
+                        },
+                    };
+                }
+                if name.ends_with(".sln") {
+                    return Detection {
+                        stack: Stack::DotNet,
+                        reason: DetectionReason::Marker {
+                            path: name.to_string(),
+                        },
+                    };
+                }
+            }
         }
     }
 

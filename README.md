@@ -27,12 +27,13 @@ instead of adding yet another bespoke CLI to learn.
 ## Features
 
 - **Stack auto-detection** — looks for marker files such as `bun.lock`,
-  `package.json`, `gradlew`, `Cargo.toml`, `pubspec.yaml`, `BUILD.bazel`,
-  `pyproject.toml`, or falls back to `.git`.
+  `package.json`, `gradlew`, `Cargo.toml`, `go.mod`, `Gemfile`, `pom.xml`,
+  `composer.json`, `mix.exs`, `*.csproj`, `Package.swift`, `pubspec.yaml`, 
+  `BUILD.bazel`, `pyproject.toml`, or falls back to `.git`.
 - **Zero-config defaults** — each stack ships with sensible commands for all
-  verbs (e.g. Bun → `bun run dev`, Rust → `cargo run`). Works out-of-the-box.
+  verbs (e.g. Bun → `bun run dev`, Rust → `cargo run`, Go → `go run .`). Works out-of-the-box.
 - **Optional overrides** — drop an `axl.toml` in any repo to redefine verbs,
-  set env vars, enforce tool requirements, or even change the detected stack.
+  set env vars, enforce tool requirements, or change the detected stack.
 - **Unified helper verbs** — beyond the core runtime verbs you also get
   `axl info`, `axl detect`, `axl doctor`, `axl init`, `axl recent`, `axl resume`,
   `axl switch`, and `axl version`.
@@ -40,7 +41,7 @@ instead of adding yet another bespoke CLI to learn.
   you ran, and when. Stored in `~/.config/axl/projects.json`, enabling
   `axl recent`, `axl resume`, and `axl switch`.
 - **Safety checks** — every command can declare required tools (e.g. `bun`,
-  `cargo`, `adb`). AXL verifies they exist before spawning anything.
+  `cargo`, `adb`, `go`, `dotnet`). AXL verifies they exist before spawning anything.
 
 ---
 
@@ -141,6 +142,14 @@ If `[project]` supplies `stack`, it overrides detection.
 | `melos.yaml`     | Dart monorepo (Melos)               |
 | `BUILD.bazel`    | Bazel                               |
 | `pyproject.toml` | Python                              |
+| `go.mod`         | Go                                  |
+| `Gemfile`        | Ruby / Rails                        |
+| `pom.xml`        | Maven / Java                        |
+| `composer.json`  | PHP / Laravel                       |
+| `mix.exs`        | Elixir / Phoenix                    |
+| `*.csproj`       | .NET / C#                           |
+| `*.sln`          | .NET / C# (solution)                |
+| `Package.swift`  | Swift                               |
 | `.git`           | Generic fallback                    |
 
 If `axl.toml` exists, its `stack` value wins.

@@ -21,10 +21,9 @@ impl ProjectContext {
     }
 
     pub fn from_path(path: &Path) -> Result<Self> {
-        let canonical = path
+        let root = path
             .canonicalize()
             .with_context(|| format!("canonicalizing {}", path.display()))?;
-        let root = find_project_root(&canonical);
         let config = ProjectConfig::load(&root)?;
         let override_stack = config.stack_override();
         let detection = detect_stack(&root, override_stack, Some(config.path()));
@@ -76,19 +75,6 @@ impl ProjectContext {
             spec,
             CommandOrigin::Default(self.stack),
         ))
-    }
-}
-
-fn find_project_root(start: &Path) -> PathBuf {
-    let mut current = start.to_path_buf();
-    loop {
-        if current.join("axl.toml").exists() || current.join(".git").exists() {
-            return current;
-        }
-
-        if !current.pop() {
-            return start.to_path_buf();
-        }
     }
 }
 
