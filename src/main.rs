@@ -12,6 +12,7 @@ use crate::verbs::Verb;
 use anyhow::{Context, Result, anyhow, bail};
 use chrono::Local;
 use clap::Parser;
+use colored::Colorize;
 use std::io::{self, Write};
 use std::path::Path;
 use std::process::{Command, ExitStatus};
@@ -54,7 +55,7 @@ fn main() -> Result<()> {
             run_doctor(&ctx)?;
         }
         Commands::Version => {
-            println!("axl {}", env!("CARGO_PKG_VERSION"));
+            println!("{} {}", "axl".bright_cyan().bold(), env!("CARGO_PKG_VERSION").bright_white());
         }
         // Verb commands handled by earlier branch
         Commands::Dev
@@ -76,8 +77,12 @@ fn execute_with_context(ctx: ProjectContext, verb: Verb, registry: &mut Registry
 
     ensure_requirements(&resolved.requires)?;
 
-    println!("▶ {} ({})", resolved.cmd, resolved.origin_label());
-    println!("   dir: {}", ctx.root.display());
+    println!("{} {} {}", 
+        "▶".bright_green().bold(), 
+        resolved.cmd.bright_yellow(), 
+        format!("({})", resolved.origin_label()).bright_black()
+    );
+    println!("   {}: {}", "dir".cyan(), ctx.root.display().to_string().magenta());
     io::stdout().flush().ok();
 
     let status = spawn_command(&resolved, &ctx.root)?;
@@ -133,44 +138,57 @@ fn missing_requirements(tools: &[String]) -> Vec<String> {
 }
 
 fn show_info(ctx: &ProjectContext) {
-    println!("Project  : {}", ctx.project_name());
-    println!("Root     : {}", ctx.root.display());
-    println!("Stack    : {}", ctx.stack.label());
-    println!("Detection: {}", ctx.detection.reason);
+    println!("{:<9}: {}", "Project".cyan().bold(), ctx.project_name().bright_white().bold());
+    println!("{:<9}: {}", "Root".cyan().bold(), ctx.root.display().to_string().magenta());
+    println!("{:<9}: {}", "Stack".cyan().bold(), ctx.stack.label().bright_cyan());
+    println!("{:<9}: {}", "Detection".cyan().bold(), ctx.detection.reason.to_string().yellow());
     if ctx.has_config() {
-        println!("Config   : {}", ctx.config_path().display());
+        println!("{:<9}: {}", "Config".cyan().bold(), ctx.config_path().display().to_string().magenta());
     } else {
-        println!("Config   : (none)");
+        println!("{:<9}: {}", "Config".cyan().bold(), "(none)".bright_black());
     }
     println!();
-    println!("Verbs:");
+    println!("{}:", "Verbs".bright_cyan().bold());
     for verb in Verb::ALL {
         match ctx.resolved_command(verb) {
-            Some(cmd) => println!("  {:<5} → {:<40} ({})", verb, cmd.cmd, cmd.origin_label()),
-            None => println!("  {:<5} → <not defined>", verb),
+            Some(cmd) => println!("  {:<5} {} {:<40} {}", 
+                verb.to_string().bright_green(), 
+                "→".bright_black(),
+                cmd.cmd.yellow(), 
+                format!("({})", cmd.origin_label()).bright_black()
+            ),
+            None => println!("  {:<5} {} {}", 
+                verb.to_string().bright_black(), 
+                "→".bright_black(),
+                "<not defined>".red()
+            ),
         }
     }
 }
 
 fn print_detection(ctx: &ProjectContext) {
-    println!("Stack    : {}", ctx.stack.label());
-    println!("Detected : {}", ctx.detection.reason);
-    println!("Root     : {}", ctx.root.display());
+    println!("{:<9}: {}", "Stack".cyan().bold(), ctx.stack.label().bright_cyan());
+    println!("{:<9}: {}", "Detected".cyan().bold(), ctx.detection.reason.to_string().yellow());
+    println!("{:<9}: {}", "Root".cyan().bold(), ctx.root.display().to_string().magenta());
     if ctx.has_config() {
-        println!("axl.toml : {}", ctx.config_path().display());
+        println!("{:<9}: {}", "axl.toml".cyan().bold(), ctx.config_path().display().to_string().magenta());
     }
 }
 
 fn show_recent(registry: &Registry) {
     let entries = registry.recent();
     if entries.is_empty() {
-        println!("No projects in registry yet.");
+        println!("{}", "No projects in registry yet.".yellow());
         return;
     }
 
     println!(
         "{:<3} {:<24} {:<14} {:<8} {}",
-        "#", "Project", "Stack", "Verb", "Last used"
+        "#".bright_black().bold(), 
+        "Project".cyan().bold(), 
+        "Stack".cyan().bold(), 
+        "Verb".cyan().bold(), 
+        "Last used".cyan().bold()
     );
     for (idx, entry) in entries.into_iter().enumerate() {
         let verb = entry
@@ -187,11 +205,11 @@ fn show_recent(registry: &Registry) {
             .unwrap_or_else(|| "-".into());
         println!(
             "{:<3} {:<24} {:<14} {:<8} {}",
-            idx + 1,
-            entry.project_name,
-            entry.stack.label(),
-            verb,
-            timestamp
+            (idx + 1).to_string().yellow(),
+            entry.project_name.bright_white().bold(),
+            entry.stack.label().bright_cyan(),
+            verb.bright_green(),
+            timestamp.bright_black()
         );
     }
 }
@@ -204,10 +222,12 @@ fn handle_resume(project: Option<String>, registry: &mut Registry) -> Result<()>
         .last_used_verb
         .ok_or_else(|| anyhow!("project has no recorded verb to resume"))?;
     println!(
-        "Resuming {} • {} ({})",
-        entry.project_name,
-        verb,
-        entry.path.display()
+        "{} {} {} {} {}",
+        "Resuming".bright_cyan().bold(),
+        entry.project_name.bright_white().bold(),
+        "•".bright_black(),
+        verb.to_string().bright_green(),
+        format!("({})", entry.path.display()).magenta()
     );
     let ctx = ProjectContext::from_path(&entry.path)?;
     execute_with_context(ctx, verb, registry)
@@ -220,7 +240,7 @@ fn handle_switch(project: Option<String>, path_only: bool, registry: &Registry) 
     if path_only {
         println!("{}", entry.path.display());
     } else {
-        println!("cd {}", entry.path.display());
+        println!("{} {}", "cd".bright_green(), entry.path.display().to_string().magenta());
     }
     Ok(())
 }
@@ -261,14 +281,14 @@ fn handle_init(ctx: &ProjectContext, force: bool) -> Result<()> {
     }
 
     std::fs::write(path, doc).with_context(|| format!("writing {}", path.display()))?;
-    println!("Created {}", path.display());
+    println!("{} {}", "Created".green().bold(), path.display().to_string().magenta());
     Ok(())
 }
 
 fn run_doctor(ctx: &ProjectContext) -> Result<()> {
-    println!("AXL doctor for {}", ctx.project_name());
-    println!("Root   : {}", ctx.root.display());
-    println!("Stack  : {}", ctx.stack.label());
+    println!("{} {}", "AXL doctor for".bright_cyan().bold(), ctx.project_name().bright_white().bold());
+    println!("{:<7}: {}", "Root".cyan().bold(), ctx.root.display().to_string().magenta());
+    println!("{:<7}: {}", "Stack".cyan().bold(), ctx.stack.label().bright_cyan());
     println!();
 
     let mut issues = Vec::new();
@@ -276,26 +296,41 @@ fn run_doctor(ctx: &ProjectContext) -> Result<()> {
         if let Some(command) = ctx.resolved_command(verb) {
             let missing = missing_requirements(&command.requires);
             if missing.is_empty() {
-                println!("[ok] {verb} → {}", command.cmd);
+                println!("{} {} {} {}", 
+                    "[ok]".green().bold(),
+                    verb.to_string().bright_green(),
+                    "→".bright_black(),
+                    command.cmd.yellow()
+                );
             } else {
                 println!(
-                    "[missing] {verb} ({}) → {}",
-                    missing.join(", "),
-                    command.cmd
+                    "{} {} {} {}",
+                    "[missing]".red().bold(),
+                    verb.to_string().bright_green(),
+                    format!("({}) →", missing.join(", ")).red(),
+                    command.cmd.yellow()
                 );
                 issues.push((verb, missing));
             }
         } else {
-            println!("[warn] {verb} has no mapped command");
+            println!("{} {} {}", 
+                "[warn]".yellow().bold(),
+                verb.to_string().bright_black(),
+                "has no mapped command".yellow()
+            );
         }
     }
 
     if issues.is_empty() {
-        println!("\nEverything looks good.");
+        println!("\n{}", "Everything looks good.".green().bold());
     } else {
-        println!("\nMissing requirements detected:");
+        println!("\n{}:", "Missing requirements detected".red().bold());
         for (verb, missing) in issues {
-            println!("  - {verb}: {}", missing.join(", "));
+            println!("  {} {}: {}", 
+                "-".bright_black(),
+                verb.to_string().bright_green(),
+                missing.join(", ").red()
+            );
         }
     }
 
