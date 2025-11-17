@@ -13,7 +13,6 @@ pub enum Stack {
     Flutter,
     Melos,
     Bazel,
-    Robin,
     Python,
     Generic,
 }
@@ -28,7 +27,6 @@ impl Stack {
             Stack::Flutter => "Flutter",
             Stack::Melos => "Melos",
             Stack::Bazel => "Bazel",
-            Stack::Robin => "Robin",
             Stack::Python => "Python",
             Stack::Generic => "Generic",
         }
@@ -43,7 +41,6 @@ impl Stack {
             Stack::Flutter => "flutter",
             Stack::Melos => "melos",
             Stack::Bazel => "bazel",
-            Stack::Robin => "robin",
             Stack::Python => "python",
             Stack::Generic => "generic",
         }
@@ -109,14 +106,6 @@ impl Stack {
             (Stack::Bazel, Open) => Some(default_open_command()),
             (Stack::Bazel, Logs) => Some("bazel test //... --test_output=all"),
 
-            (Stack::Robin, Dev) => Some("robin dev:start"),
-            (Stack::Robin, Build) => Some("robin build"),
-            (Stack::Robin, Test) => Some("robin test"),
-            (Stack::Robin, Clean) => Some("robin clean"),
-            (Stack::Robin, Reset) => Some("robin reset"),
-            (Stack::Robin, Open) => Some(default_open_command()),
-            (Stack::Robin, Logs) => Some("robin dev:logs"),
-
             (Stack::Python, Dev) => Some("python -m app"),
             (Stack::Python, Build) => Some("python -m build"),
             (Stack::Python, Test) => Some("pytest"),
@@ -139,7 +128,6 @@ impl Stack {
             Stack::Flutter => vec!["flutter"],
             Stack::Melos => vec!["melos"],
             Stack::Bazel => vec!["bazel"],
-            Stack::Robin => vec!["robin"],
             Stack::Python => vec!["python"],
             Stack::Generic => vec![],
         }
@@ -229,10 +217,6 @@ const MARKERS: &[Marker] = &[
     Marker {
         stack: Stack::Bazel,
         path: "BUILD.bazel",
-    },
-    Marker {
-        stack: Stack::Robin,
-        path: ".robin.json",
     },
     Marker {
         stack: Stack::Python,
