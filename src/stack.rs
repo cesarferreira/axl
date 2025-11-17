@@ -74,8 +74,8 @@ impl Stack {
             (Stack::Bun, Dev) => Some("bun run dev"),
             (Stack::Bun, Build) => Some("bun run build"),
             (Stack::Bun, Test) => Some("bun run test"),
-            (Stack::Bun, Clean) => Some("rm -rf node_modules bun.lockb"),
-            (Stack::Bun, Reset) => Some("rm -rf node_modules bun.lockb && bun install"),
+            (Stack::Bun, Clean) => Some("rm -rf node_modules bun.lock"),
+            (Stack::Bun, Reset) => Some("rm -rf node_modules bun.lock && bun install"),
             (Stack::Bun, Open) => Some(default_open_command()),
             (Stack::Bun, Logs) => Some("bun run dev -- --verbose"),
             (Stack::Bun, Install) => Some("bun install"),
@@ -93,10 +93,10 @@ impl Stack {
             (Stack::Gradle, Build) => Some("./gradlew assemble"),
             (Stack::Gradle, Test) => Some("./gradlew test"),
             (Stack::Gradle, Clean) => Some("./gradlew clean"),
-            (Stack::Gradle, Reset) => Some("./gradlew clean --refresh-dependencies && ./gradlew --stop"),
+            (Stack::Gradle, Reset) => Some("./gradlew clean --refresh-dependencies && ./gradlew installDebug"),
             (Stack::Gradle, Open) => Some(default_open_command()),
             (Stack::Gradle, Logs) => Some("adb logcat"),
-            (Stack::Gradle, Install) => Some("./gradlew publishToMavenLocal"),
+            (Stack::Gradle, Install) => Some("./gradlew installDebug"),
 
             (Stack::Rust, Dev) => Some("cargo run"),
             (Stack::Rust, Build) => Some("cargo build"),
@@ -297,7 +297,7 @@ const MARKERS: &[Marker] = &[
     },
     Marker {
         stack: Stack::Bun,
-        path: "bun.lockb",
+        path: "bun.lock",
     },
     Marker {
         stack: Stack::Node,

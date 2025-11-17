@@ -119,7 +119,7 @@ requires = ["bun", "node"]
 cmd = "bun run test"
 
 [reset]
-cmd = "rm -rf node_modules bun.lockb && bun install"
+cmd = "rm -rf node_modules bun.lock && bun install"
 ```
 
 Each verb section can define:
@@ -136,8 +136,7 @@ If `[project]` supplies `stack`, it overrides detection.
 
 | Marker           | Stack / defaults                    |
 | ---------------- | ----------------------------------- |
-| `bun.lock`       | Bun (v1.2+ text format)             |
-| `bun.lockb`      | Bun (pre-v1.2 binary format)        |
+| `bun.lock`       | Bun                                 |
 | `package.json`   | Node / TypeScript                   |
 | `gradlew`        | Gradle / Android / Kotlin           |
 | `Cargo.toml`     | Rust                                |
@@ -153,7 +152,6 @@ If `[project]` supplies `stack`, it overrides detection.
 | `*.csproj`       | .NET / C#                           |
 | `*.sln`          | .NET / C# (solution)                |
 | `Package.swift`  | Swift                               |
-| `.git`           | Generic fallback                    |
 
 If `axl.toml` exists, its `stack` value wins.
 
